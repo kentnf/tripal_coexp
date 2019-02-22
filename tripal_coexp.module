@@ -1,0 +1,86 @@
+<?php
+
+// api
+// require_once 'api/tripal_coexp.api.inc';
+
+// node coexp
+require_once 'includes/tripal_coexp_loader.inc';
+require_once 'includes/tripal_coexp.chado_node.inc';
+
+// theme preprocessing
+require_once "theme/tripal_coexp.theme.inc";
+
+/**
+ * Implements hook_menu().
+ */
+function tripal_coexp_menu() {
+  $items = array();
+  
+  // === main admin page ===
+  $items['admin/tripal/extension/tripal_coexp'] = array(
+    'title' => 'Tripal co-expression',
+    'description' => 'A module for display co-expression analysis result.',
+    'access arguments' => array('administer'),
+  );
+
+  // === help === 
+  $items['admin/tripal/extension/tripal_coexp/help'] = array(
+    'title' => 'Help',
+    'description' => 'Document for how to use Tripal co-expression.',
+    'access arguments' => array('administer'),
+    'page callback' => 'theme',
+    'page arguments' => array('tripal_coexp_help'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
+  );
+
+  $items['coexp/%'] = array(
+    'title' => 'Barchart of co-expression genes',
+    'access arguments' => array('access content'),
+    'page callback' => 'tripal_feature_coexp_exp',
+    'page arguments' => array(1),
+    'type' => MENU_NORMAL_ITEM,
+    'weight' => 10,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function tripal_coexp_theme() {
+  $items = array();
+  $path = drupal_get_path('module', 'tripal_coexp');
+
+  $items['tripal_coexp_help'] = array(
+    'template' => 'tripal_coexp_help',
+    'path' => "$path/theme",
+  );
+ 
+  // show list of coexpress genes on feature page
+  $items['tripal_feature_coexp_list'] = array(
+    'template' => 'tripal_feature_coexp_list',
+    'path' => "$path/theme",
+  );
+
+  // barchart of coexpression genes
+  $items['tripal_feature_coexp_exp'] = array(
+    'template' => 'tripal_feature_coexp_exp',
+    'path' => "$path/theme",
+  );
+
+  return $items;
+}
+
+function tripal_coexp_help($path, $arg) {
+  if ($path == 'admin/help#tripal_coexp') {
+    return theme('tripal_coexp_help');
+  }  
+}
+
+function tripal_feature_coexp_exp($feature_rel_id) {
+  return theme('tripal_feature_coexp_exp', array('feature_rel_id'=>$feature_rel_id));
+}
+
+
