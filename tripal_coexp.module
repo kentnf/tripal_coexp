@@ -35,9 +35,18 @@ function tripal_coexp_menu() {
   );
 
   $items['coexp/%'] = array(
-    'title' => 'Barchart of co-expression genes',
+    'title' => 'Expression of co-expressed genes',
     'access arguments' => array('access content'),
     'page callback' => 'tripal_feature_coexp_exp',
+    'page arguments' => array(1),
+    'type' => MENU_NORMAL_ITEM,
+    'weight' => 10,
+  );
+
+  $items['coexptb/%'] = array(
+    'title' => 'Expression of co-expressed genes',
+    'access arguments' => array('access content'),
+    'page callback' => 'tripal_feature_coexp_tab',
     'page arguments' => array(1),
     'type' => MENU_NORMAL_ITEM,
     'weight' => 10,
@@ -64,9 +73,15 @@ function tripal_coexp_theme() {
     'path' => "$path/theme",
   );
 
-  // barchart of coexpression genes
+  // barchart of coexpressed genes
   $items['tripal_feature_coexp_exp'] = array(
     'template' => 'tripal_feature_coexp_exp',
+    'path' => "$path/theme",
+  );
+
+  // table of coexpression genes
+  $items['tripal_feature_coexp_tab'] = array(
+    'template' => 'tripal_feature_coexp_tab',
     'path' => "$path/theme",
   );
 
@@ -81,6 +96,10 @@ function tripal_coexp_help($path, $arg) {
 
 function tripal_feature_coexp_exp($feature_rel_id) {
   return theme('tripal_feature_coexp_exp', array('feature_rel_id'=>$feature_rel_id));
+}
+
+function tripal_feature_coexp_tab($feature_rel_id) {
+  return theme('tripal_feature_coexp_tab', array('feature_rel_id'=>$feature_rel_id));
 }
 
 

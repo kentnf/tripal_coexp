@@ -23,15 +23,9 @@ function tripal_coexp_get_exp($feature_id) {
   return $exp;
 }
 
-function tripal_coexp_preprocess_tripal_feature_coexp_exp(&$variables) {
-
-  // set js path
-  $path = drupal_get_path('module', 'tripal_coexp');
-  drupal_add_js($path . '/theme/js/d3.min.js', array('type'=>'file'));
-  drupal_add_js($path . '/theme/js/plotly-latest.min.js', array('type'=>'file'));
-
+function tripal_coexp_rel_exp($feature_rel_id) {
+  
   // get feature ids of two co-express genes
-  $feature_rel_id = $variables['feature_rel_id'];
   $sql = "SELECT R.*, F1.name AS sname, F2.name AS oname FROM chado.feature_relationship R
         LEFT JOIN chado.feature F1 ON F1.feature_id = R.subject_id
         LEFT JOIN chado.feature F2 ON F2.feature_id = R.object_id
@@ -72,7 +66,6 @@ function tripal_coexp_preprocess_tripal_feature_coexp_exp(&$variables) {
    *     factorN = factorN_name    eg: tissue = leaf
    *     [other sample properties]
    */
-  if (sizeof($s_exp) > 0 AND sizeof($o_exp) > 0) {
     $rnaseq_exp = array(); // key project id, 
     $samples = array();  // key sample id,
     $samples_name_id = array();
@@ -119,10 +112,6 @@ function tripal_coexp_preprocess_tripal_feature_coexp_exp(&$variables) {
       $rnaseq_exp[$project_id]->$type[$sample_id][] = $value;
     }
     //end for o_exp
-
-    $variables['experiments'] = $samples;
-    $variables['s_exp'] = $rnaseq_exp;
-    //$variables['design'] = $design; 
 
     // retrieve experiment design for each project
     foreach ($rnaseq_exp as $project_id) {
@@ -196,16 +185,57 @@ function tripal_coexp_preprocess_tripal_feature_coexp_exp(&$variables) {
     // convert the experiments and rnaseq_exp to json format
     $coexp_data = [$sub_name, $obj_name, $rvalue];
 
-    $experiments_json = json_encode($samples);
-    $rnaseq_exps_json = json_encode($rnaseq_exp);
-	$coexp_json = json_encode($coexp_data);
+	return [$coexp_data, $samples, $rnaseq_exp];
+}
 
-    $data_js = "
-      var experiments = $experiments_json;
-      var rnaseq_exps = $rnaseq_exps_json;
-	  var coexp_data = $coexp_json;
-    ";
-    drupal_add_js($data_js, array('type'=>'inline', 'scope'=>'footer','weight' => 50));
-    drupal_add_js($path . '/theme/js/tripal_coexp_barchart_plotly.js', array('type'=>'file', 'scope'=>'footer','weight' => 100));    
-  }
+function tripal_coexp_preprocess_tripal_feature_coexp_exp(&$variables) {
+
+  // set js path
+  $path = drupal_get_path('module', 'tripal_coexp');
+  drupal_add_js($path . '/theme/js/d3.min.js', array('type'=>'file'));
+  drupal_add_js($path . '/theme/js/plotly-latest.min.js', array('type'=>'file'));
+
+  // get feature rel id of two co-express genes
+  $feature_rel_id = $variables['feature_rel_id'];
+
+  // get data by feature rel id
+  $data = tripal_coexp_rel_exp($feature_rel_id);
+    
+  // convert the experiments and rnaseq_exp to json format
+  $coexp_data = $data[0]; 
+  $samples = $data[1];
+  $rnaseq_exp = $data[2];
+
+  $experiments_json = json_encode($samples);
+  $rnaseq_exps_json = json_encode($rnaseq_exp);
+  $coexp_json = json_encode($coexp_data);
+
+  $data_js = "
+	var experiments = $experiments_json;
+	var rnaseq_exps = $rnaseq_exps_json;
+	var coexp_data = $coexp_json;
+  ";
+  drupal_add_js($data_js, array('type'=>'inline', 'scope'=>'footer','weight' => 50));
+  drupal_add_js($path . '/theme/js/tripal_coexp_barchart_plotly.js', array('type'=>'file', 'scope'=>'footer','weight' => 100));
+}
+
+function tripal_coexp_preprocess_tripal_feature_coexp_tab(&$variables) {
+
+  // set js path
+  $path = drupal_get_path('module', 'tripal_coexp');
+
+  // get feature rel id of two co-express genes
+  $feature_rel_id = $variables['feature_rel_id'];
+
+  // get data by feature rel id
+  $data = tripal_coexp_rel_exp($feature_rel_id);
+
+  // convert the experiments and rnaseq_exp to json format
+  $coexp_data = $data[0];
+  $samples = $data[1];
+  $rnaseq_exp = $data[2];
+
+  $variables['coexp_data'] = $coexp_data;
+  $variables['samples'] = $samples;
+  $variables['rnaseq_exp'] = $rnaseq_exp;
 }

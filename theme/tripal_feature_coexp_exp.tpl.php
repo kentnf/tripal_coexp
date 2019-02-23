@@ -1,9 +1,7 @@
 <?php
 ?>
-    <div class="row">
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
         <div id=tripal-rnaseq-histogram></div>
-        <br>
-        <div id=tripal-rnaseq-description></div>
-        <br>
-        </div>
     </div>
+</div>

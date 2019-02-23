@@ -26,7 +26,7 @@ function rnaseq_histogram_plot(div, title_name, type_name, factor1, factor2, exp
 				y1_sd.push(sd_value[0]);
 				y2_sd.push(sd_value[1]);
             }
-            link = '<a href="/experiment/' + exp_id + '">' + exp_name + '</a>';
+            link = '<a href="/biosample/' + exp_name + '">' + exp_name + '</a>';
             x1_name.push(link);
             y1_value.push(value[0]);
 
@@ -107,12 +107,13 @@ function rnaseq_histogram(rnaseq_exps, experiments) {
 
 			for (var pid in rnaseq_exps) {
 				var title_name = '<a href="/bioproject/' + pid + '">' + rnaseq_exps[pid].name + '</a>';
-				var desc = rnaseq_exps[pid].desc;
-				var desc_html = '<p><b>Description: </b> <br>';
-				for(var d in desc) {
-					desc_html += desc[d] + "<br>";
-				}
-				desc_html += '</p>';
+				var desc = '';
+				//var desc = rnaseq_exps[pid].desc;
+				//var desc_html = '<p><b>Description: </b> <br>';
+				//for(var d in desc) {
+				//	desc_html += desc[d] + "<br>";
+				//}
+				//desc_html += '</p>';
 
 				var type_name;
 				var sd_name;
@@ -140,10 +141,10 @@ function rnaseq_histogram(rnaseq_exps, experiments) {
 				rnaseq_histogram_plot(subdiv.id, title_name, type_name, factor1, factor2, experiments, values, sd);
 
 				// create div for description 
-				var subdiv2 = document.createElement("div");
-				subdiv2.id = 'tripal-rnaseq-desc-' + pid;
-				jQuery('#tripal-rnaseq-histogram').append(subdiv2);
-				jQuery('#' + subdiv2.id).html(desc_html);
+				//var subdiv2 = document.createElement("div");
+				//subdiv2.id = 'tripal-rnaseq-desc-' + pid;
+				//jQuery('#tripal-rnaseq-histogram').append(subdiv2);
+				//jQuery('#' + subdiv2.id).html(desc_html);
 			}
 			jQuery('#tripal-rnaseq-description').html('');
 }
